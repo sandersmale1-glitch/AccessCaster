@@ -784,6 +784,14 @@ trap. Reasoning that only matters at one call site lives in a comment there inst
   string read once per desk per session. **Do not tabulate the other ids instead**: that is six
   entries per desk, unmeasured for the Duo, and wrong again the day RODE add a mode. The MI_09
   product string is no help either - it reads `HID Interface` on both desks.
+- **THE 20-CHANNEL MULTITRACK CAPTURE, TRACK BY TRACK.** Measured 11th October 2026 on a second
+  Pro II, fw 1.7.6, pre-fader multitrack in Standard (`outputMultiMode` 1), through WASAPI on
+  `Microphone (RODECaster Pro II Main Multitrack)` at 48 kHz: channels 1 and 2 are the main mix;
+  3 and 4 are Mic 1, the same mono signal on both, BEFORE its fader and WITH its processing (an EQ
+  cut on Mic 1 shows on the track); 5 and 6 are Mic 2. A null test of channel 3 against the main
+  mix, with only Mic 1 open, its fader at unity and the master Compellor off: correlation 1.00000,
+  residual -115.6 dB, and the main mix exactly 6.00 dB above the track. The computer's own USB 1
+  playback does not come back as a track of its own.
 - **VIRTUAL DEVICES NEED BOTH HALVES OF `outputMultiMode`, AND A BIND THAT RODE'S SERVICE ONLY
   SOMETIMES MAKES.** Measured on a Pro II, fw 1.7.6, driver 1.0.5, with RODE's app never opened.
   Post-fader multitrack AND Expanded (value 5, product id 0x0094) yields ten capture endpoints,
@@ -1345,6 +1353,12 @@ trap. Reasoning that only matters at one call site lives in a comment there inst
   inference says 114" looks damning until you look at the 221 the two disagree about, and every one
   of them is `'-1|0'`: a placeholder cell for a source slot the desk does not fill. The grid is 30
   source rows wide and a desk uses 13 of them.
+  **Compare level and anchor AS NUMBERS** (`rcp_read.LINK_EPS`), never as text. The desk formats
+  the two halves separately: a linked fader at the bottom reads `'-3.00258e-06|0'` or
+  `'9.87202e-08|0'` and one at its first step `'0.00787401|0.00787402'` (a second Pro II, fw
+  1.7.6 and 1.7.7, 7th October and 14th November 2026). A text compare calls each unlinked, a mix
+  scheme then captures a manual level for it, and applying that scheme sends a real unlink: the
+  source stops following its fader in that output.
 
 - **A CHANNEL MUTE DOES NOT SILENCE AN UNLINKED CROSS-POINT.** `channelOutputMute` reaches each
   mix through the cross-points that follow the fader; one unlinked at a manual level keeps playing.
@@ -2759,6 +2773,10 @@ verbatim against the publishing tool's own copy. When to ask and who is told is 
   ordinary level machinery, like a fader.
 - **Each pot publishes its own `potMin` and `potMax`** (0 and 127 on a Pro II). Read those before
   trusting the constant on a new device rather than assuming 127.
+- **READABLE IS NOT WRITABLE: writing `potLevel` changes nothing you can hear.** The write lands at
+  `[0, n]` and reads back, and the headphone stays at the level the physical knob sets (a second
+  Pro II, fw 1.7.6, 7th October 2026). So a headphone level cannot be set from software, and a
+  read-back is no proof that it was.
 - **The HEADPHONE blocks carry no level at all** - only `headphoneType` and `headphoneColour`. The
   level is on the POT, which is a different node under a different parent; looking under HEADPHONE
   and concluding the knobs are unreadable is the obvious wrong turn.
